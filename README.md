@@ -3,7 +3,7 @@
 
 **First aid for broken Python environments.** One command tells you *what's broken* and *exactly how to fix it*.
 
-> **Status: v0.1, early.** 3 checks work today, and more are on the roadmap.
+> **Status: v0.2.** 12 checks, tested on Windows, macOS and Linux (Python 3.9–3.14).
 > Feedback is very welcome in [Issues](https://github.com/sai-sakalam/pyfirstaid/issues). *Which problems do you hit most?*
 
 ---
@@ -38,20 +38,16 @@ Python 3.13.1 (~/project/.venv/bin/python)
 
 ## Try it
 
-pyfirstaid is not on PyPI yet. To run it from source:
-
 ```bash
-git clone https://github.com/sai-sakalam/pyfirstaid
-cd pyfirstaid
-python -m pip install .
+pip install pyfirstaid          # or: pipx install pyfirstaid
 python -m pyfirstaid
 ```
 
-Or build the **single file**, which needs no install and works even when pip is broken:
+No install possible (for example, pip itself is broken)? Download `pyfirstaid.pyz` from the
+[latest release](https://github.com/sai-sakalam/pyfirstaid/releases) and run:
 
 ```bash
-python scripts/build_pyz.py
-python dist/pyfirstaid.pyz
+python pyfirstaid.pyz
 ```
 
 ### Options
@@ -101,18 +97,22 @@ Download `pyfirstaid.pyz` from the [latest release](https://github.com/sai-sakal
 
 ## Checks
 
-| Status | Check | What it catches |
-|---|---|---|
-| ✅ v0.1 | `venv` | No venv active, an unused `.venv` in the folder, a *different* venv activated in your shell, a system Python that blocks pip (PEP 668) |
-| ✅ v0.1 | `pip-mismatch` | `pip` installs into a different Python than the one you run, pip missing, a broken `pip` command |
-| ✅ v0.1 | `ssl` | Certificate failures reaching PyPI (corporate proxies), certificate variables pointing at missing files, macOS certificates not installed, Python built without SSL |
-| 🔜 planned | `compiled` | Compiled packages built for a different Python version |
-| 🔜 planned | `broken-installs` | Duplicate or half-removed packages |
-| 🔜 planned | `dependencies` | Dependency conflicts (`pip check`) |
-| 🔜 planned | `path` | Several Pythons on PATH hiding each other |
-| 🔜 planned | `leaks` | `PYTHONPATH` or user-site packages leaking into a venv |
-| 🔜 planned | `permissions` | No write access to site-packages |
-| 🔜 planned | `encoding` | Locale and encoding problems |
+| Check | What it catches |
+|---|---|
+| `python-version` | Python past (or close to) end of life, pre-release Pythons, Apple's built-in Command Line Tools Python |
+| `venv` | No venv active, an unused `.venv` in the folder, a *different* venv activated in your shell, a system Python that blocks pip (PEP 668) |
+| `pip-mismatch` | `pip` installs into a different Python than the one you run, pip missing, a broken `pip` command |
+| `path` | Typing `python` / `python3` runs a *different* Python, or the Windows Microsoft Store shortcut |
+| `leaks` | `PYTHONPATH` / `PYTHONHOME` set, venvs that can see system packages |
+| `shadowing` | Files like `random.py` or `requests.py` in your folder that hide real modules |
+| `ssl` | Certificate failures reaching PyPI (corporate proxies), certificate variables pointing at missing files, macOS certificates not installed, Python built without SSL |
+| `compiled` | Packages with compiled files built for a different Python version |
+| `broken-installs` | Packages installed twice, `~` leftovers from interrupted installs, corrupted metadata |
+| `dependencies` | Dependency conflicts (`pip check`), each with a suggested fix |
+| `permissions` | Virtual environments you can't install into (e.g. created with sudo) |
+| `encoding` | Default text encoding that is not UTF-8 |
+
+Run one or a few: `python -m pyfirstaid --only shadowing,path`. List them all: `python -m pyfirstaid --list`.
 
 ## How is this different?
 
@@ -128,7 +128,7 @@ Download `pyfirstaid.pyz` from the [latest release](https://github.com/sai-sakal
 
 ## Design principles
 
-- **Works when pip is broken.** It runs as a single file (`python pyfirstaid.pyz`). A PyPI release is coming.
+- **Works when pip is broken.** Install with `pip install pyfirstaid`, or run the single file `python pyfirstaid.pyz` without installing.
 - **Zero dependencies.** Standard library only, Python 3.9+.
 - **Every problem comes with a fix command,** not just a description.
 - **Conservative.** It's better to miss an edge case than to raise a false alarm.

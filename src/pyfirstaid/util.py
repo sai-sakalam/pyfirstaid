@@ -49,3 +49,29 @@ def is_within(path: str, parent: str) -> bool:
 
 def in_virtualenv() -> bool:
     return sys.prefix != getattr(sys, "base_prefix", sys.prefix)
+
+
+def site_package_dirs() -> List[str]:
+    """Existing site-packages directories used by this interpreter (deduplicated)."""
+    import site
+    import sysconfig
+
+    candidates: List[str] = []
+    try:
+        candidates.extend(site.getsitepackages())
+    except AttributeError:  # very old virtualenv
+        pass
+    paths = sysconfig.get_paths()
+    candidates.extend([paths.get("purelib", ""), paths.get("platlib", "")])
+    if site.ENABLE_USER_SITE:
+        user_site = site.getusersitepackages()
+        if isinstance(user_site, str):
+            candidates.append(user_site)
+
+    seen, result = set(), []
+    for d in candidates:
+        key = norm(d)
+        if d and key not in seen and os.path.isdir(d):
+            seen.add(key)
+            result.append(d)
+    return result

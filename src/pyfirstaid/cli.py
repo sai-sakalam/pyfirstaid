@@ -72,7 +72,7 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     if args.list:
         for c in ALL_CHECKS:
-            print("%-14s %s" % (c.id, c.title))
+            print("%-16s %s" % (c.id, c.title))
         return EXIT_OK
 
     try:
