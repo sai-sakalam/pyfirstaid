@@ -51,7 +51,7 @@ pyfirstaid: checking your Python environment
 
 ## Design principles
 
-- **Works when pip is broken.** It ships as a single file you can run directly (`python pyfirstaid.pyz`), and it's also on PyPI.
+- **Works when pip is broken.** It ships as a single file you can run directly (`python pyfirstaid.pyz`), and will also be published on PyPI.
 - **Zero dependencies.** Standard library only.
 - **Every problem comes with a fix command,** not just a description.
 - **Conservative.** It's better to miss an edge case than to raise a false alarm.
