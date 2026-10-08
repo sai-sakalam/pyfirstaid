@@ -3,6 +3,12 @@ name: Publish to PyPI
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to attach pyfirstaid.pyz to"
+        required: true
+        default: "v0.1.0"
 
 jobs:
   publish:
@@ -17,18 +23,23 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Build package
+      - name: Build package (wheel + sdist)
         run: |
           python -m pip install build
           python -m build
 
+      - name: Build single-file pyfirstaid.pyz (kept OUT of dist/)
+        run: |
+          python scripts/build_pyz.py
+          mkdir -p pyz-out
+          mv dist/pyfirstaid.pyz pyz-out/
+
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-
-      - name: Build single-file pyfirstaid.pyz
-        run: python scripts/build_pyz.py
+        with:
+          packages-dir: dist/
 
       - name: Attach pyfirstaid.pyz to the GitHub release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release upload "${{ github.event.release.tag_name }}" dist/pyfirstaid.pyz
+        run: gh release upload "${{ github.event.release.tag_name || inputs.tag }}" pyz-out/pyfirstaid.pyz --clobber
