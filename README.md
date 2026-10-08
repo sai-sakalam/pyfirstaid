@@ -3,7 +3,7 @@
 
 **First aid for broken Python environments.** One command tells you *what's broken* and *exactly how to fix it*.
 
-> **Status: v0.2.** 12 checks, tested on Windows, macOS and Linux (Python 3.9–3.14).
+> **Status: v0.2.1.** 12 checks, tested on Windows, macOS and Linux (Python 3.9–3.14).
 > Feedback is very welcome in [Issues](https://github.com/sai-sakalam/pyfirstaid/issues). *Which problems do you hit most?*
 
 ---
@@ -58,6 +58,15 @@ pip install pyfirstaid          # or: pipx install pyfirstaid
 python -m pyfirstaid
 ```
 
+Installed with **pipx** or **`uv tool`**? pyfirstaid then lives in its own private environment, so it
+automatically checks the Python you get when you type `python3`, and tells you so. To check a
+different one, use `--python`:
+
+```bash
+pyfirstaid --python .venv/bin/python     # a project's virtual environment
+pyfirstaid --python python3.12           # any Python on your PATH
+```
+
 No install possible (for example, pip itself is broken)? Download `pyfirstaid.pyz` from the
 [latest release](https://github.com/sai-sakalam/pyfirstaid/releases) and run:
 
@@ -75,6 +84,7 @@ python pyfirstaid.pyz
 | `--strict` | Exits with code 1 on warnings too (useful in CI) |
 | `--only venv,ssl` / `--skip ssl` | Runs only some checks, or skips some |
 | `--list` | Lists all checks |
+| `--python PATH` | Checks a different Python (path or command, e.g. `python3.12`). It doesn't need pyfirstaid installed |
 
 Exit codes: `0` means no problems, `1` means problems were found, `2` means pyfirstaid itself failed.
 

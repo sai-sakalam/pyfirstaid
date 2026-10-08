@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.1
+
+- **Fix: correct results when installed with pipx or `uv tool`.** These tools put pyfirstaid in
+  its own private environment, so it used to diagnose *that* environment and report false
+  problems (e.g. "pip installs into a DIFFERENT Python"). It now checks the Python you get
+  when you type `python3`, and says so in a short note.
+- **New `--python PATH` option** to check any interpreter, e.g. `--python python3.12` or
+  `--python .venv/bin/python`. The target doesn't need pyfirstaid installed.
+- Files in the current folder (e.g. `random.py`) can no longer break pyfirstaid itself.
+- Clearer message when no compiled packages are installed.
+
 ## 0.2.0
 
 Nine new checks, bringing the total to 12:

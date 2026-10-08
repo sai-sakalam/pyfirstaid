@@ -59,6 +59,8 @@ def run_check(opts: Options) -> List[Finding]:
         compiled_count += has_ext
 
     if not bad:
+        if compiled_count == 0:
+            return [Finding(CHECK_ID, Status.OK, "No compiled packages installed")]
         return [Finding(CHECK_ID, Status.OK,
                         "%d compiled package(s) match this Python" % compiled_count)]
 

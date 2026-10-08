@@ -8,7 +8,7 @@ import sys
 import traceback
 from typing import List, Optional
 
-from pyfirstaid import __version__
+from pyfirstaid import __version__, delegate
 from pyfirstaid.checks import ALL_CHECKS
 from pyfirstaid.model import Check, Finding, Options, Status
 from pyfirstaid.report import render_json, render_text
@@ -31,6 +31,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--skip", metavar="IDS", help="comma-separated check ids to skip")
     p.add_argument("--list", action="store_true", help="list available checks and exit")
     p.add_argument("--no-color", action="store_true", help="disable colored output")
+    p.add_argument("--python", metavar="PATH",
+                   help="check this Python instead (path or command, e.g. python3.12). "
+                        "Default: the Python running pyfirstaid, or `python3` on PATH "
+                        "when pyfirstaid is installed with pipx / uv tool")
     p.add_argument("--version", action="version", version="pyfirstaid " + __version__)
     return p
 
@@ -67,13 +71,64 @@ def use_color(no_color: bool) -> bool:
         or bool(os.environ.get("WT_SESSION"))  # Windows Terminal supports ANSI
 
 
+def forwarded(argv: List[str]) -> List[str]:
+    """Command-line arguments minus --python, to pass on to the target interpreter."""
+    out, skip_next = [], False
+    for a in argv:
+        if skip_next:
+            skip_next = False
+        elif a == "--python":
+            skip_next = True
+        elif not a.startswith("--python="):
+            out.append(a)
+    return out
+
+
+def maybe_delegate(args: argparse.Namespace, argv: List[str]) -> Optional[int]:
+    """Re-run inside another interpreter when needed. Returns its exit code, or None."""
+    if os.environ.get(delegate.DELEGATED_ENV):
+        return None
+    if args.python:
+        target = delegate.resolve(args.python)
+        if not target:
+            print("pyfirstaid: cannot find Python %r" % args.python, file=sys.stderr)
+            return EXIT_INTERNAL
+        reason = "--python"
+    elif delegate.in_tool_venv(sys.prefix):
+        target = delegate.default_target()
+        if not target:
+            return None
+        reason = "tool"
+    else:
+        return None
+
+    info = delegate.probe(target)
+    if info is None or not info[0]:
+        print("pyfirstaid: %s %s; checking the Python that runs pyfirstaid instead."
+              % (target, "does not start" if info is None else "is older than Python 3.9"),
+              file=sys.stderr)
+        return None
+    if delegate.same_environment(info[1]):
+        return None
+    if reason == "tool" and not args.json:
+        print("Note: pyfirstaid is installed in its own environment (pipx / uv tool), so it is "
+              "checking the Python you get with `python3`: %s\n"
+              "      Use --python PATH to check a different one.\n" % target, file=sys.stderr)
+    return delegate.run_in(target, forwarded(argv))
+
+
 def main(argv: Optional[List[str]] = None) -> int:
+    argv = list(sys.argv[1:] if argv is None else argv)
     args = build_parser().parse_args(argv)
 
     if args.list:
         for c in ALL_CHECKS:
             print("%-16s %s" % (c.id, c.title))
         return EXIT_OK
+
+    code = maybe_delegate(args, argv)
+    if code is not None:
+        return code
 
     try:
         findings = run_checks(select_checks(args.only, args.skip), Options(offline=args.offline))
