@@ -67,6 +67,38 @@ python dist/pyfirstaid.pyz
 
 Exit codes: `0` means no problems, `1` means problems were found, `2` means pyfirstaid itself failed.
 
+## Common situations
+
+**"I installed a package, but `import` says it doesn't exist."**
+
+    python -m pyfirstaid --only pip-mismatch,venv
+
+Usually `pip` installed into a different Python, or your virtual environment isn't active. pyfirstaid tells you which, and how to fix it.
+
+**"pip install fails with SSL: CERTIFICATE_VERIFY_FAILED at work."**
+
+    python -m pyfirstaid --only ssl
+
+This checks whether a company proxy is intercepting HTTPS and whether your certificate settings point at real files.
+
+**"I'm reporting a bug and the maintainer asked for my environment details."**
+
+    python -m pyfirstaid --share
+
+Paste the output into the issue. Your username and home folder are hidden.
+
+**"I want CI to fail if the environment is broken."**
+
+    python -m pyfirstaid --offline --strict --json > env-report.json
+
+The exit code is `1` if there are problems, and the JSON report can be saved as a build artifact.
+
+**"pip itself is broken, so I can't install anything."**
+
+Download `pyfirstaid.pyz` from the [latest release](https://github.com/sai-sakalam/pyfirstaid/releases) and run:
+
+    python pyfirstaid.pyz
+
 ## Checks
 
 | Status | Check | What it catches |
