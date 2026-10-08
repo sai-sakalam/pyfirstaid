@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.2
+
+Fixes found by testing on a real Mac with Homebrew Python:
+
+- **Fix: false "pip installs into a DIFFERENT Python" on Homebrew** (and other setups where
+  site-packages lives outside Python's own folder). Paths are now also compared with symlinks
+  resolved.
+- **Dependency conflicts inside a system / Homebrew Python** are now reported as information
+  with safe advice, instead of a `pip install` fix that the system would refuse (PEP 668).
+
 ## 0.2.1
 
 - **Fix: correct results when installed with pipx or `uv tool`.** These tools put pyfirstaid in

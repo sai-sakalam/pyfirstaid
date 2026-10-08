@@ -146,3 +146,44 @@ def test_all_checks_registered():
     ids = [c.id for c in ALL_CHECKS]
     assert len(ids) == len(set(ids)) == 12
     assert os.path.basename(__file__)  # keeps `os` used
+
+
+# --- v0.2.2 regressions found on a real Mac (Homebrew) ------------------------
+
+def test_pip_in_homebrew_site_packages_outside_prefix(tmp_path):
+    # Homebrew: sys.prefix is .../Frameworks/Python.framework/Versions/3.14, but
+    # site-packages lives in /opt/homebrew/lib/python3.14/site-packages
+    from pyfirstaid.checks import pip_mismatch
+
+    prefix = str(tmp_path / "Frameworks" / "Versions" / "3.14")
+    site_dir = str(tmp_path / "lib" / "python3.14" / "site-packages")
+    loc = os.path.join(site_dir, "pip")
+    assert not pip_mismatch.pip_belongs_here(loc, "3.14", "3.14", [prefix])
+    assert pip_mismatch.pip_belongs_here(loc, "3.14", "3.14", [prefix, site_dir])
+
+
+def test_norm_resolves_symlinks(tmp_path):
+    from pyfirstaid.util import norm
+
+    real = tmp_path / "Cellar" / "python"
+    real.mkdir(parents=True)
+    link = tmp_path / "opt-python"
+    link.symlink_to(real)
+    assert norm(str(link)) == norm(str(real))
+
+
+def test_dependency_conflicts_in_system_python_are_info(monkeypatch):
+    monkeypatch.setattr(dependencies, "system_managed", lambda: True)
+    monkeypatch.setattr(dependencies, "run", lambda cmd, timeout=0: (
+        1, "wheel 0.48.0 requires packaging, which is not installed.", ""))
+    findings = dependencies.run_check(Options())
+    assert len(findings) == 1 and findings[0].status == Status.INFO
+    assert "pip install" not in findings[0].fix.split("Don't pip install")[-1].split(".")[0]
+
+
+def test_dependency_conflicts_in_venv_are_warnings(monkeypatch):
+    monkeypatch.setattr(dependencies, "system_managed", lambda: False)
+    monkeypatch.setattr(dependencies, "run", lambda cmd, timeout=0: (
+        1, "wheel 0.48.0 requires packaging, which is not installed.", ""))
+    findings = dependencies.run_check(Options())
+    assert findings[0].status == Status.WARN and 'install "packaging"' in findings[0].fix

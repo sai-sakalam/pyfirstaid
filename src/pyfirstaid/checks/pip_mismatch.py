@@ -9,7 +9,7 @@ import sys
 from typing import List, Optional, Tuple
 
 from pyfirstaid.model import Finding, Options, Status
-from pyfirstaid.util import is_within, run
+from pyfirstaid.util import is_within, run, site_package_dirs
 
 CHECK_ID = "pip-mismatch"
 
@@ -34,7 +34,10 @@ def pip_belongs_here(location: str, pip_python: str, running_python: str,
 
 
 def _allowed_prefixes() -> List[str]:
-    prefixes = [sys.prefix]
+    # Homebrew (and some Linux distros) keep site-packages OUTSIDE sys.prefix,
+    # e.g. /opt/homebrew/lib/python3.14/site-packages, so include every
+    # site-packages folder this interpreter actually uses.
+    prefixes = [sys.prefix] + site_package_dirs()
     if site.ENABLE_USER_SITE:
         user_site = site.getusersitepackages()
         if isinstance(user_site, str):

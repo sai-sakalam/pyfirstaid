@@ -31,10 +31,14 @@ def run(cmd: List[str], timeout: float = 15.0) -> Tuple[int, str, str]:
 
 
 def norm(path: Optional[str]) -> str:
-    """Normalise a path for comparison (absolute, resolved case on Windows)."""
+    """Normalise a path for comparison: symlinks resolved, case-folded on Windows.
+
+    Resolving symlinks matters on macOS/Homebrew, where e.g.
+    /opt/homebrew/opt/python@3.14 links into /opt/homebrew/Cellar/...
+    """
     if not path:
         return ""
-    return os.path.normcase(os.path.abspath(path))
+    return os.path.normcase(os.path.realpath(path))
 
 
 def is_within(path: str, parent: str) -> bool:

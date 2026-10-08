@@ -3,7 +3,7 @@
 
 **First aid for broken Python environments.** One command tells you *what's broken* and *exactly how to fix it*.
 
-> **Status: v0.2.1.** 12 checks, tested on Windows, macOS and Linux (Python 3.9–3.14).
+> **Status: v0.2.2.** 12 checks, tested on Windows, macOS and Linux (Python 3.9–3.14).
 > Feedback is very welcome in [Issues](https://github.com/sai-sakalam/pyfirstaid/issues). *Which problems do you hit most?*
 
 ---
