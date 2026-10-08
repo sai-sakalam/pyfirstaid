@@ -1,4 +1,5 @@
 # pyfirstaid 🩹
+[![CI](https://github.com/sai-sakalam/pyfirstaid/actions/workflows/ci.yml/badge.svg)](https://github.com/sai-sakalam/pyfirstaid/actions/workflows/ci.yml)
 
 **First aid for broken Python environments.** One command tells you *what's broken* and *exactly how to fix it*.
 
