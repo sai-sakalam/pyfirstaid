@@ -18,22 +18,37 @@ This was discussed on the Python forum: [Standard Library Health Check Module](h
 
 ## Example
 
-A real run: the virtual environment's Python is running, but the `pip` command on PATH belongs to the system Python:
+A run inside a project folder where the venv's Python is running, `pip` belongs to the
+system Python, and a file called `random.py` is hiding the real `random` module:
 
 ```console
-$ python -m pyfirstaid
+$ python -m pyfirstaid --share
 
-pyfirstaid 0.1.0: checking your Python environment
+pyfirstaid 0.2.0: checking your Python environment
 Python 3.13.1 (~/project/.venv/bin/python)
 
+✔ Python 3.13.1 (supported until October 2029)
 ✔ Virtual environment active: ~/project/.venv
 ✘ `pip` installs into a DIFFERENT Python
-    pip    -> /usr/lib/python3/dist-packages/pip (python 3.13)
+    pip    -> /opt/homebrew/lib/python3.13/site-packages/pip (python 3.13)
     python -> ~/project/.venv/bin/python (python 3.13)
     fix: Use `python -m pip install <package>` instead of `pip install`. If a virtual environment should be active, activate it first.
-✔ HTTPS to pypi.org works (OpenSSL 3.0.13 30 Jan 2024)
+! Typing `python3` runs a DIFFERENT Python than this one
+    python3 -> /opt/homebrew
+    this Python -> ~/project/.venv
+    fix: Activate the virtual environment you want, or call Python by its full path. To change the default, put the right Python's folder first in PATH.
+✔ No PYTHONPATH / PYTHONHOME leaks
+! `random.py` in this folder hides the standard library module `random`
+    `import random` will load your file instead, which causes confusing errors like "module 'random' has no attribute ...".
+    fix: Rename it (e.g. my_random.py) and delete any __pycache__ folder next to it.
+✔ HTTPS to pypi.org works (OpenSSL 3.4.0 22 Oct 2024)
+✔ 12 compiled package(s) match this Python
+✔ No broken or duplicate installs (1 folder(s) scanned)
+✔ No dependency conflicts (pip check)
+✔ site-packages is writable
+✔ Default text encoding is UTF-8
 
-1 problem(s), 0 warning(s).
+1 problem(s), 2 warning(s).
 ```
 
 ## Try it
@@ -76,6 +91,48 @@ Usually `pip` installed into a different Python, or your virtual environment isn
     python -m pyfirstaid --only ssl
 
 This checks whether a company proxy is intercepting HTTPS and whether your certificate settings point at real files.
+
+**"`module 'random' has no attribute 'randint'`" (or the same with `json`, `requests`, ...)**
+
+    python -m pyfirstaid --only shadowing
+
+A file in your folder with the same name as a real module (`random.py`, `json.py`, `requests.py`) is being imported instead of the real one. pyfirstaid names the file to rename.
+
+**"I upgraded Python and now a package fails with `ImportError` / `undefined symbol` / `DLL load failed`."**
+
+    python -m pyfirstaid --only compiled,broken-installs
+
+Compiled packages built for your *old* Python version, or half-removed installs, are the usual cause. You get the exact reinstall command.
+
+**"`python3 --version` still shows the old version after I installed a new Python."**
+
+    python3 -m pyfirstaid --only path,python-version
+
+Shows which Python `python` / `python3` actually start, warns about Apple's built-in Python on macOS and the Microsoft Store shortcut on Windows, and flags Pythons past end of life.
+
+**"pip says ERROR: Could not install packages due to an OSError: Permission denied."**
+
+    python -m pyfirstaid --only permissions,venv
+
+Tells you whether you're installing into a read-only system Python (use a venv or pipx) or into a venv that was created with `sudo`.
+
+**"pip check shows conflicts and I don't know what to install."**
+
+    python -m pyfirstaid --only dependencies
+
+Each conflict comes with a ready-to-run `pip install` command.
+
+**"`UnicodeDecodeError` when reading a file, but it works on my colleague's machine."**
+
+    python -m pyfirstaid --only encoding
+
+Your default text encoding is not UTF-8 (common on Windows and minimal Linux/Docker images). pyfirstaid shows the one-line fix.
+
+**"My venv picks up packages I never installed in it."**
+
+    python -m pyfirstaid --only leaks
+
+`PYTHONPATH` or `PYTHONHOME` set in your shell profile is the usual reason.
 
 **"I'm reporting a bug and the maintainer asked for my environment details."**
 
