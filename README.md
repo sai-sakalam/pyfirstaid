@@ -63,8 +63,6 @@ pyfirstaid: checking your Python environment
 **In:** pip, venv and uv on Windows, macOS and Linux.
 **Out (for now):** conda (use `conda doctor`), Poetry and pyenv specifics, automatic repair.
 
-done what is next step and how do i tell anyone this is must not like anothers who tried but this was not addressed
-
 ## How is this different?
 
 | Tool | What it does | Gap pyfirstaid fills |
