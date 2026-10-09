@@ -1,7 +1,7 @@
 # pyfirstaid 🩹
 [![PyPI](https://img.shields.io/pypi/v/pyfirstaid)](https://pypi.org/project/pyfirstaid/)
 [![Python versions](https://img.shields.io/pypi/pyversions/pyfirstaid)](https://pypi.org/project/pyfirstaid/)
-[![Downloads](https://static.pepy.tech/badge/pyfirstaid/month)](https://pepy.tech/projects/pyfirstaid)
+[![Downloads](https://img.shields.io/pypi/dm/pyfirstaid)](https://pypistats.org/packages/pyfirstaid)
 [![CI](https://github.com/sai-sakalam/pyfirstaid/actions/workflows/ci.yml/badge.svg)](https://github.com/sai-sakalam/pyfirstaid/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](https://github.com/sai-sakalam/pyfirstaid/blob/main/LICENSE)
 
