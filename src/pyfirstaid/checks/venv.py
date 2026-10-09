@@ -62,7 +62,8 @@ def run_check(opts: Options) -> List[Finding]:
             findings.append(Finding(
                 CHECK_ID, Status.WARN,
                 "No virtual environment, and this system Python blocks pip installs",
-                detail="Your OS marks this Python as externally managed (PEP 668), "
+                detail="Your OS or package manager (e.g. Homebrew) marks this Python as "
+                       "externally managed (PEP 668), "
                        "so `pip install` will fail with 'externally-managed-environment'.",
                 fix="python -m venv .venv  &&  " + activate_command(".venv"),
             ))
