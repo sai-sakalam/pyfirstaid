@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.3
+
+- Clearer PEP 668 message: it now says the block can come from your OS *or* a package
+  manager such as Homebrew.
+- PyPI page: version, Python-versions, downloads and license badges; Source and Changelog
+  links; per-version Python classifiers (3.9–3.14).
+
 ## 0.2.2
 
 Fixes found by testing on a real Mac with Homebrew Python:

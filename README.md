@@ -1,9 +1,13 @@
 # pyfirstaid 🩹
+[![PyPI](https://img.shields.io/pypi/v/pyfirstaid)](https://pypi.org/project/pyfirstaid/)
+[![Python versions](https://img.shields.io/pypi/pyversions/pyfirstaid)](https://pypi.org/project/pyfirstaid/)
+[![Downloads](https://static.pepy.tech/badge/pyfirstaid/month)](https://pepy.tech/projects/pyfirstaid)
 [![CI](https://github.com/sai-sakalam/pyfirstaid/actions/workflows/ci.yml/badge.svg)](https://github.com/sai-sakalam/pyfirstaid/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue)](https://github.com/sai-sakalam/pyfirstaid/blob/main/LICENSE)
 
 **First aid for broken Python environments.** One command tells you *what's broken* and *exactly how to fix it*.
 
-> **Status: v0.2.2.** 12 checks, tested on Windows, macOS and Linux (Python 3.9–3.14).
+> **Status: early, actively developed.** 12 checks, tested on Windows, macOS and Linux (Python 3.9–3.14).
 > Feedback is very welcome in [Issues](https://github.com/sai-sakalam/pyfirstaid/issues). *Which problems do you hit most?*
 
 ---
