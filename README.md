@@ -28,7 +28,7 @@ system Python, and a file called `random.py` is hiding the real `random` module:
 ```console
 $ python -m pyfirstaid --share
 
-pyfirstaid 0.2.0: checking your Python environment
+pyfirstaid 0.2.3: checking your Python environment
 Python 3.13.1 (~/project/.venv/bin/python)
 
 ✔ Python 3.13.1 (supported until October 2029)
