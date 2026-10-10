@@ -217,6 +217,10 @@ Run one or a few: `python -m pyfirstaid --only shadowing,path`. List them all: `
 - Development: `python -m pip install -e ".[dev]"`, then `python -m pytest` and `ruff check src tests`.
 - A new check is one file in `src/pyfirstaid/checks/` that returns a list of `Finding`s, registered in `checks/__init__.py`.
 
+## Author
+
+Made by [Sai Sakalam](https://sai-sakalam.github.io/), a data engineer who kept fixing the same broken Python environments for colleagues and decided to automate it. Feedback and ideas are always welcome.
+
 ## License
 
 MIT

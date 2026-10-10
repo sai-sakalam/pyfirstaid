@@ -41,6 +41,7 @@ Homepage = "https://github.com/sai-sakalam/pyfirstaid"
 Source = "https://github.com/sai-sakalam/pyfirstaid"
 Issues = "https://github.com/sai-sakalam/pyfirstaid/issues"
 Changelog = "https://github.com/sai-sakalam/pyfirstaid/blob/main/CHANGELOG.md"
+Author = "https://sai-sakalam.github.io/"
 
 [tool.hatch.version]
 path = "src/pyfirstaid/__init__.py"
