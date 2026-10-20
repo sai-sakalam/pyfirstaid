@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- **New `conda` check** for problems from mixing conda and pip (something `conda doctor`
+  doesn't look at):
+  - a package conda installed that pip later replaced, so both tools think they own it,
+  - pip packages installed into the conda *base* environment,
+  - a conda environment that is activated, but isn't the Python actually running.
+  It only reads files on disk, runs no conda or pip commands, and stays quiet when unsure.
+- README: up-to-date example output and downloads badge; author link on PyPI.
+
 ## 0.2.3
 
 - Clearer PEP 668 message: it now says the block can come from your OS *or* a package

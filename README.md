@@ -7,7 +7,7 @@
 
 **First aid for broken Python environments.** One command tells you *what's broken* and *exactly how to fix it*.
 
-> **Status: early, actively developed.** 12 checks, tested on Windows, macOS and Linux (Python 3.9–3.14).
+> **Status: early, actively developed.** 13 checks, tested on Windows, macOS and Linux (Python 3.9–3.14).
 > Feedback is very welcome in [Issues](https://github.com/sai-sakalam/pyfirstaid/issues). *Which problems do you hit most?*
 
 ---
@@ -172,6 +172,7 @@ Download `pyfirstaid.pyz` from the [latest release](https://github.com/sai-sakal
 |---|---|
 | `python-version` | Python past (or close to) end of life, pre-release Pythons, Apple's built-in Command Line Tools Python |
 | `venv` | No venv active, an unused `.venv` in the folder, a *different* venv activated in your shell, a system Python that blocks pip (PEP 668) |
+| `conda` | A package conda installed that pip later replaced, pip packages in the conda *base* environment, a conda environment that is activated but isn't the Python running |
 | `pip-mismatch` | `pip` installs into a different Python than the one you run, pip missing, a broken `pip` command |
 | `path` | Typing `python` / `python3` runs a *different* Python, or the Windows Microsoft Store shortcut |
 | `leaks` | `PYTHONPATH` / `PYTHONHOME` set, venvs that can see system packages |
@@ -190,7 +191,7 @@ Run one or a few: `python -m pyfirstaid --only shadowing,path`. List them all: `
 | Tool | What it does | Gap pyfirstaid fills |
 |---|---|---|
 | `pip check` | Finds dependency conflicts | Only covers one kind of problem |
-| `conda doctor` | Health checks for conda environments | Doesn't cover pip, venv or uv |
+| `conda doctor` | Health checks for conda environments | Doesn't check what pip did inside conda, or venv / uv |
 | pymedic | Lists environment info (versions, packages) | Reports, but doesn't diagnose or suggest fixes |
 | pyenv-doctor | Early-stage environment checks | Single release so far |
 | env-repair | Repairs conda and pip environments | Changes your environment; pyfirstaid only diagnoses, safely |
@@ -208,8 +209,8 @@ Run one or a few: `python -m pyfirstaid --only shadowing,path`. List them all: `
 
 ## Scope
 
-**In:** pip, venv and uv on Windows, macOS and Linux.
-**Out (for now):** conda (use `conda doctor`), Poetry and pyenv specifics, automatic repair.
+**In:** pip, venv and uv on Windows, macOS and Linux, plus conda / pip mixing problems.
+**Out (for now):** conda's own internals (use `conda doctor`), Poetry and pyenv specifics, automatic repair.
 
 ## Contributing
 

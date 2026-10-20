@@ -7,6 +7,7 @@ from typing import List
 from pyfirstaid.checks import (
     broken_installs,
     compiled,
+    conda,
     dependencies,
     encoding,
     leaks,
@@ -23,6 +24,7 @@ from pyfirstaid.model import Check
 ALL_CHECKS: List[Check] = [
     Check(python_version.CHECK_ID, "Python version", python_version.run_check),
     Check(venv.CHECK_ID, "Virtual environment", venv.run_check),
+    Check(conda.CHECK_ID, "conda / pip mixing", conda.run_check),
     Check(pip_mismatch.CHECK_ID, "pip / python match", pip_mismatch.run_check),
     Check(path_check.CHECK_ID, "python on PATH", path_check.run_check),
     Check(leaks.CHECK_ID, "PYTHONPATH / PYTHONHOME", leaks.run_check),

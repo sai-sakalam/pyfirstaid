@@ -144,7 +144,7 @@ def test_all_checks_registered():
     from pyfirstaid.checks import ALL_CHECKS
 
     ids = [c.id for c in ALL_CHECKS]
-    assert len(ids) == len(set(ids)) == 12
+    assert len(ids) == len(set(ids)) == 13
     assert os.path.basename(__file__)  # keeps `os` used
 
 
