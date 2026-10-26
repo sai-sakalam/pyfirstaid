@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0
 
 - **New `conda` check** for problems from mixing conda and pip (something `conda doctor`
   doesn't look at):
