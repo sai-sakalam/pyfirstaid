@@ -4,6 +4,7 @@
 [![Downloads](https://img.shields.io/pypi/dm/pyfirstaid)](https://pypistats.org/packages/pyfirstaid)
 [![CI](https://github.com/sai-sakalam/pyfirstaid/actions/workflows/ci.yml/badge.svg)](https://github.com/sai-sakalam/pyfirstaid/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue)](https://github.com/sai-sakalam/pyfirstaid/blob/main/LICENSE)
+[![XERJ Corpus Hub contributor](https://hub.xerj.org/contributors/sai-sakalam/badge.svg)](https://hub.xerj.org/contributors/sai-sakalam)
 
 **First aid for broken Python environments.** One command tells you *what's broken* and *exactly how to fix it*.
 
