@@ -11,7 +11,8 @@ license = "MIT"
 license-files = ["LICENSE"]
 requires-python = ">=3.9"
 authors = [{ name = "Sai Gavaskar Sakalam" }]
-keywords = ["pip", "virtualenv", "venv", "diagnostics", "troubleshooting", "ssl", "environment"]
+keywords = ["pip", "virtualenv", "venv", "diagnostics", "troubleshooting", "ssl", "environment",
+            "conda", "uv", "poetry", "pyenv", "jupyter"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",

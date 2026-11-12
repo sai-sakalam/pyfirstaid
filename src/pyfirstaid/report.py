@@ -19,6 +19,10 @@ SYMBOLS = {
     Status.ERROR: ("✘", "[x]"),
     Status.SKIP: ("-", "[-]"),
 }
+# Checks for tools you may not use. When they are skipped, the text report shows them on
+# one line instead of one line each.
+TOOL_CHECKS = ("conda", "uv", "poetry", "pyenv", "jupyter")
+
 COLORS = {Status.OK: "32", Status.INFO: "36", Status.WARN: "33",
           Status.ERROR: "31", Status.SKIP: "90"}
 
@@ -86,13 +90,23 @@ def render_text(findings: List[Finding], color: bool = False, share: bool = Fals
         "Python %s (%s)" % (env["python"], env["executable"]),
         "",
     ]
+    unused = [f.check for f in findings
+              if f.status == Status.SKIP and f.check in TOOL_CHECKS and not f.detail and not f.fix]
     for f in findings:
+        if f.check in unused and f.status == Status.SKIP:
+            continue
         sym = SYMBOLS[f.status][0 if unicode_ok else 1]
         lines.append("%s %s" % (paint(f.status, sym), f.title))
         for d in filter(None, f.detail.splitlines()):
             lines.append("    " + d)
         if f.fix:
-            lines.append("    fix: " + f.fix)
+            fix_lines = f.fix.splitlines()
+            lines.append("    fix: " + fix_lines[0])
+            lines.extend("         " + line for line in fix_lines[1:])
+
+    if unused:
+        sym = SYMBOLS[Status.SKIP][0 if unicode_ok else 1]
+        lines.append("%s Not used here: %s" % (paint(Status.SKIP, sym), ", ".join(unused)))
 
     counts = summarize(findings)
     lines.append("")

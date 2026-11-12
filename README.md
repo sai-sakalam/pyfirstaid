@@ -7,7 +7,7 @@
 
 **First aid for broken Python environments.** One command tells you *what's broken* and *exactly how to fix it*.
 
-> **Status: early, actively developed.** 13 checks, tested on Windows, macOS and Linux (Python 3.9–3.14).
+> **Status: early, actively developed.** 17 checks, tested on Windows, macOS and Linux (Python 3.9–3.14).
 > Feedback is very welcome in [Issues](https://github.com/sai-sakalam/pyfirstaid/issues). *Which problems do you hit most?*
 
 ---
@@ -28,7 +28,7 @@ system Python, and a file called `random.py` is hiding the real `random` module:
 ```console
 $ python -m pyfirstaid --share
 
-pyfirstaid 0.2.3: checking your Python environment
+pyfirstaid 0.4.0: checking your Python environment
 Python 3.13.1 (~/project/.venv/bin/python)
 
 ✔ Python 3.13.1 (supported until October 2029)
@@ -51,6 +51,7 @@ Python 3.13.1 (~/project/.venv/bin/python)
 ✔ No dependency conflicts (pip check)
 ✔ site-packages is writable
 ✔ Default text encoding is UTF-8
+- Not used here: conda, uv, poetry, pyenv, jupyter
 
 1 problem(s), 2 warning(s).
 ```
@@ -130,6 +131,24 @@ Shows which Python `python` / `python3` actually start, warns about Apple's buil
 
 Tells you whether you're installing into a read-only system Python (use a venv or pipx) or into a venv that was created with `sudo`.
 
+**"I installed a package, but my Jupyter notebook still says `ModuleNotFoundError`."**
+
+    python -m pyfirstaid --only jupyter,pip-mismatch
+
+The notebook runs a *kernel*, and the kernel may use a different Python than your terminal. pyfirstaid finds kernels that point at a deleted or moved Python, and tells you when your environment isn't registered as a kernel at all. Tip: inside a notebook, use `%pip install <package>` (not `!pip install`), so it installs into the kernel's Python.
+
+**"It works with `uv run` / `poetry run`, but not when I run `python` myself."**
+
+    python -m pyfirstaid --only uv,poetry,venv
+
+The project's packages live in its own environment. pyfirstaid tells you whether the Python running is that environment, whether it exists yet (`uv sync` / `poetry install`), or whether it broke after a Python upgrade.
+
+**"pyenv says one version, but `python --version` shows another."**
+
+    python -m pyfirstaid --only pyenv,path
+
+Compares the Python running with your `.python-version` file (or `PYENV_VERSION`), and tells you if the version isn't installed in pyenv or pyenv isn't set up in your shell.
+
 **"pip check shows conflicts and I don't know what to install."**
 
     python -m pyfirstaid --only dependencies
@@ -173,7 +192,11 @@ Download `pyfirstaid.pyz` from the [latest release](https://github.com/sai-sakal
 | `python-version` | Python past (or close to) end of life, pre-release Pythons, Apple's built-in Command Line Tools Python |
 | `venv` | No venv active, an unused `.venv` in the folder, a *different* venv activated in your shell, a system Python that blocks pip (PEP 668) |
 | `conda` | A package conda installed that pip later replaced, pip packages in the conda *base* environment, a conda environment that is activated but isn't the Python running |
-| `pip-mismatch` | `pip` installs into a different Python than the one you run, pip missing, a broken `pip` command |
+| `uv` | A uv project whose environment isn't created yet, is broken (its base Python is gone), or isn't the Python running |
+| `poetry` | A Poetry project whose environment is missing, broken, or isn't the Python running |
+| `pyenv` | `.python-version` / `PYENV_VERSION` asking for a different Python than the one running, a version pyenv hasn't installed, pyenv not set up in your shell |
+| `jupyter` | Kernels pointing to a Python that no longer exists, an environment with ipykernel that isn't registered as a kernel, kernels with the same name |
+| `pip-mismatch` | `pip` installs into a different Python than the one you run, pip missing (with the `uv pip` fix in uv environments), a broken `pip` command |
 | `path` | Typing `python` / `python3` runs a *different* Python, or the Windows Microsoft Store shortcut |
 | `leaks` | `PYTHONPATH` / `PYTHONHOME` set, venvs that can see system packages |
 | `shadowing` | Files like `random.py` or `requests.py` in your folder that hide real modules |
