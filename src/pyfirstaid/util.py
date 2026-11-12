@@ -79,3 +79,84 @@ def site_package_dirs() -> List[str]:
             seen.add(key)
             result.append(d)
     return result
+
+
+def read_pyvenv_cfg(prefix: str) -> dict:
+    """Key/value pairs from <prefix>/pyvenv.cfg (empty if there is none)."""
+    values: dict = {}
+    try:
+        with open(os.path.join(prefix, "pyvenv.cfg"), encoding="utf-8") as fh:
+            for line in fh:
+                key, sep, value = line.partition("=")
+                if sep:
+                    values[key.strip().lower()] = value.strip()
+    except OSError:
+        pass
+    return values
+
+
+def broken_venv_base(prefix: str) -> Optional[str]:
+    """The base Python folder a virtual environment was made from, if it no longer exists.
+
+    A venv only links to its base Python. When that Python is upgraded or removed
+    (e.g. `brew upgrade python`), the venv stops working.
+    """
+    home = read_pyvenv_cfg(prefix).get("home")
+    if home and not os.path.isdir(home):
+        return home
+    return None
+
+
+def find_upwards(start: str, name: str) -> Optional[str]:
+    """Path of the first `name` in `start` or one of its parent folders."""
+    current = os.path.abspath(start)
+    while True:
+        candidate = os.path.join(current, name)
+        if os.path.exists(candidate):
+            return candidate
+        parent = os.path.dirname(current)
+        if parent == current:
+            return None
+        current = parent
+
+
+def read_pyproject(folder: str) -> dict:
+    """Parsed pyproject.toml in `folder` ({} if missing or unreadable).
+
+    Uses tomllib on Python 3.11+. On older Pythons a small fallback reads only
+    table names and simple `key = "value"` lines, which is all the checks need.
+    """
+    path = os.path.join(folder, "pyproject.toml")
+    try:
+        with open(path, "rb") as fh:
+            raw = fh.read()
+    except OSError:
+        return {}
+    try:
+        import tomllib  # type: ignore[import-not-found]
+
+        return tomllib.loads(raw.decode("utf-8"))
+    except ImportError:
+        pass
+    except Exception:  # noqa: BLE001 - invalid TOML: fall back to the simple reader
+        pass
+    return _simple_toml(raw.decode("utf-8", "replace"))
+
+
+def _simple_toml(text: str) -> dict:
+    import re
+
+    data: dict = {}
+    table = data
+    for line in text.splitlines():
+        line = line.strip()
+        header = re.match(r"^\[([A-Za-z0-9_.\-]+)\]$", line)
+        if header:
+            table = data
+            for part in header.group(1).split("."):
+                table = table.setdefault(part, {})
+            continue
+        kv = re.match(r'^([A-Za-z0-9_\-]+)\s*=\s*["\']([^"\']*)["\']', line)
+        if kv:
+            table[kv.group(1)] = kv.group(2)
+    return data

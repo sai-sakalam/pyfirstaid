@@ -1,6 +1,26 @@
 # Changelog
 
-## Unreleased
+## 0.4.0
+
+Four new checks for the tools people use to manage Pythons and projects. Like the conda
+check, they only read files on disk and run no uv, Poetry, pyenv or Jupyter commands.
+
+- **New `jupyter` check**: Jupyter kernels whose Python no longer exists (deleted venv,
+  upgraded Python), an environment that has ipykernel but is not registered as a kernel,
+  and several kernels with the same name in the kernel picker.
+- **New `uv` check**: a uv project whose `.venv` was never created, is broken (its base
+  Python is gone), or is not the Python running. Also respects `UV_PROJECT_ENVIRONMENT`.
+- **New `poetry` check**: finds the project's Poetry environment (in-project `.venv` or
+  Poetry's cache folder), and warns when it is broken or not the Python running.
+- **New `pyenv` check**: a `.python-version` file (or `PYENV_VERSION`) asking for a different
+  Python than the one running, a pinned version pyenv hasn't installed, and pyenv not set
+  up in the shell. uv reads `.python-version` too, so this also helps uv users.
+- `pip-mismatch`: in an environment made by uv (which has no pip by design), it now
+  suggests `uv pip install` instead of reporting pip as missing.
+- Report: checks for tools you don't use are shown on one line ("Not used here: ...").
+  Multi-line fixes are indented properly.
+
+## 0.3.0
 
 - **New `conda` check** for problems from mixing conda and pip (something `conda doctor`
   doesn't look at):
@@ -8,7 +28,7 @@
   - pip packages installed into the conda *base* environment,
   - a conda environment that is activated, but isn't the Python actually running.
   It only reads files on disk, runs no conda or pip commands, and stays quiet when unsure.
-- README: up-to-date example output and downloads badge; author link on PyPI.
+- README: up-to-date example output; author link on PyPI.
 
 ## 0.2.3
 

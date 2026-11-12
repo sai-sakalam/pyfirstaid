@@ -54,3 +54,19 @@ def test_redact_hides_home():
 def test_text_report_shows_fix():
     text = report.render_text([Finding("x", Status.ERROR, "Broken", "why", "do this")])
     assert "Broken" in text and "fix: do this" in text and "1 problem(s)" in text
+
+
+def test_unused_tool_checks_share_one_line():
+    findings = [Finding("uv", Status.SKIP, "Not a uv project"),
+                Finding("jupyter", Status.SKIP, "Jupyter not found"),
+                Finding("ssl", Status.SKIP, "Skipped connection test (--offline)"),
+                Finding("venv", Status.OK, "Virtual environment active")]
+    text = report.render_text(findings)
+    assert "Not used here: uv, jupyter" in text
+    assert "Not a uv project" not in text
+    assert "Skipped connection test" in text  # other skips are still listed
+
+
+def test_multi_line_fix_is_indented():
+    text = report.render_text([Finding("x", Status.WARN, "t", fix="first\nsecond")])
+    assert "    fix: first\n         second" in text

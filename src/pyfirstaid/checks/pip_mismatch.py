@@ -9,7 +9,7 @@ import sys
 from typing import List, Optional, Tuple
 
 from pyfirstaid.model import Finding, Options, Status
-from pyfirstaid.util import is_within, run, site_package_dirs
+from pyfirstaid.util import is_within, read_pyvenv_cfg, run, site_package_dirs
 
 CHECK_ID = "pip-mismatch"
 
@@ -50,6 +50,13 @@ def run_check(opts: Options) -> List[Finding]:
 
     code, out, err = run([sys.executable, "-m", "pip", "--version"], opts.timeout)
     if code != 0:
+        if "uv" in read_pyvenv_cfg(sys.prefix):
+            return [Finding(
+                CHECK_ID, Status.INFO,
+                "No pip in this environment (normal: it was made by uv)",
+                detail="A plain `pip install` would use some other Python's pip.",
+                fix="uv pip install <package>   (in a uv project: uv add <package>)",
+            )]
         return [Finding(
             CHECK_ID, Status.ERROR,
             "pip is not installed for this Python",
